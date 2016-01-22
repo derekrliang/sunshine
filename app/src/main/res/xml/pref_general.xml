@@ -1,5 +1,15 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <EditTextPreference
+            android:key="@string/pref_key_location"
+            android:title="@string/pref_title_location"
+            android:defaultValue="92612"
+            android:inputType="text"
+            android:singleLine="true"
+            android:maxLines="1"
+    />
+
+
     <CheckBoxPreference
         android:key="example_checkbox"
         android:title="@string/pref_title_social_recommendations"

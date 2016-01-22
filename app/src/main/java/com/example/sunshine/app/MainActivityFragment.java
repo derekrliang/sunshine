@@ -1,8 +1,10 @@
 package com.example.sunshine.app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.text.format.Time;
@@ -158,7 +160,7 @@ public class MainActivityFragment extends Fragment {
                 // http://openweathermap.org/API#forecast
                 final String FORECAST_BASE_URL =
                         "http://api.openweathermap.org/data/2.5/forecast/daily?";
-                final String QUERY_PARAM = "q";
+                final String QUERY_PARAM = "zip";
                 final String FORMAT_PARAM = "mode";
                 final String UNITS_PARAM = "units";
                 final String DAYS_PARAM = "cnt";
@@ -173,6 +175,8 @@ public class MainActivityFragment extends Fragment {
                         .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
                         .appendQueryParameter(APPID_PARAM, "a34da7610b088812794f109047a67345")
                         .build();
+
+                Log.d(TAG, "builtUri.toString()=" + builtUri.toString());
 
                 URL url = new URL(builtUri.toString());
 
@@ -267,7 +271,9 @@ public class MainActivityFragment extends Fragment {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_refresh) {
             FetchWeatherTask weatherTask = new FetchWeatherTask();
-            weatherTask.execute("92612");
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String zipCode = sharedPref.getString(SettingsActivity.KEY_PREF_LOCATION, "92612");
+            weatherTask.execute(zipCode);
             return true;
         }
 
