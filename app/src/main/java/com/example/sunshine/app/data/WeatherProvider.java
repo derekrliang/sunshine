@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.android.sunshine.app.data;
+package com.example.sunshine.app.data;
 
 import android.annotation.TargetApi;
 import android.content.ContentProvider;
@@ -23,6 +23,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import com.example.sunshine.app.data.WeatherContract;
+import com.example.sunshine.app.data.WeatherDbHelper;
 
 public class WeatherProvider extends ContentProvider {
 
@@ -30,10 +32,10 @@ public class WeatherProvider extends ContentProvider {
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private WeatherDbHelper mOpenHelper;
 
-    static final int WEATHER = 100;
-    static final int WEATHER_WITH_LOCATION = 101;
-    static final int WEATHER_WITH_LOCATION_AND_DATE = 102;
-    static final int LOCATION = 300;
+    public static final int WEATHER = 100;
+    public static final int WEATHER_WITH_LOCATION = 101;
+    public static final int WEATHER_WITH_LOCATION_AND_DATE = 102;
+    public static final int LOCATION = 300;
 
     private static final SQLiteQueryBuilder sWeatherByLocationSettingQueryBuilder;
 
@@ -114,17 +116,25 @@ public class WeatherProvider extends ContentProvider {
         and LOCATION integer constants defined above.  You can test this by uncommenting the
         testUriMatcher test within TestUriMatcher.
      */
-    static UriMatcher buildUriMatcher() {
+    public static UriMatcher buildUriMatcher() {
         // 1) The code passed into the constructor represents the code to return for the root
         // URI.  It's common to use NO_MATCH as the code for this case. Add the constructor below.
 
+        UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
+        String authority = WeatherContract.CONTENT_AUTHORITY;
 
         // 2) Use the addURI function to match each of the types.  Use the constants from
         // WeatherContract to help define the types to the UriMatcher.
 
+        // * => String, # => Integer/Number
+
+        matcher.addURI(authority, WeatherContract.PATH_WEATHER, WEATHER);
+        matcher.addURI(authority, WeatherContract.PATH_WEATHER + "/*", WEATHER_WITH_LOCATION);
+        matcher.addURI(authority, WeatherContract.PATH_WEATHER + "/*/#", WEATHER_WITH_LOCATION_AND_DATE);
+        matcher.addURI(authority, WeatherContract.PATH_LOCATION, LOCATION);
 
         // 3) Return the new matcher!
-        return null;
+        return matcher;
     }
 
     /*
