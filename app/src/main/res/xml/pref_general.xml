@@ -10,6 +10,16 @@
     />
 
 
+    <ListPreference
+            android:key="@string/pref_key_temperature_units"
+            android:title="@string/pref_title_temperature_units"
+            android:defaultValue="@string/pref_units_values_metric"
+            android:entries="@array/pref_list_temperature_units_titles"
+            android:entryValues="@array/pref_list_temperature_units_values"
+    />
+
+
+
     <CheckBoxPreference
         android:key="example_checkbox"
         android:title="@string/pref_title_social_recommendations"

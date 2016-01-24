@@ -6,6 +6,25 @@
     <string name="pref_title_location">Location</string>
     <string name="pref_key_location">location</string>
 
+    <string name="pref_title_temperature_units">Temperature Units</string>
+    <string name="pref_key_temperature_units">temperature_units</string>
+
+    <string name="pref_units_label_metric">Metric</string>
+    <string name="pref_units_label_imperial">Imperial</string>
+
+    <string name="pref_units_values_metric">metric</string>
+    <string name="pref_units_values_imperial">imperial</string>
+
+    <string-array name="pref_list_temperature_units_titles">
+        <item>@string/pref_units_label_metric</item>
+        <item>@string/pref_units_label_imperial</item>
+    </string-array>
+
+    <string-array name="pref_list_temperature_units_values">
+        <item>@string/pref_units_values_metric</item>
+        <item>@string/pref_units_values_imperial</item>
+    </string-array>
+
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
 

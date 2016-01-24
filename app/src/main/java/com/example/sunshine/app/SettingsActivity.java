@@ -35,8 +35,6 @@ import java.util.List;
  */
 public class SettingsActivity extends PreferenceActivity {
 
-    public static final String KEY_PREF_LOCATION = "location";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -201,7 +199,8 @@ public class SettingsActivity extends PreferenceActivity {
             //bindPreferenceSummaryToValue(findPreference("example_text"));
             //bindPreferenceSummaryToValue(findPreference("example_list"));
 
-            bindPreferenceSummaryToValue(findPreference("location"));
+            bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_location)));
+            bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_temperature_units)));
         }
     }
 }
