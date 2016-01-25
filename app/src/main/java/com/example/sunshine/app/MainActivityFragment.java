@@ -45,7 +45,7 @@ import java.util.List;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks {
+public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String[] FORECAST_COLUMNS = {
             // In this case the id needs to be fully qualified with a table name, since
@@ -212,8 +212,8 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     }
 
     @Override
-    public void onLoadFinished(Loader loader, Object data) {
-        mForecastAdapter.swapCursor((Cursor) data);
+    public void onLoadFinished(Loader loader, Cursor data) {
+        mForecastAdapter.swapCursor(data);
     }
 
     @Override

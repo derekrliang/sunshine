@@ -32,7 +32,6 @@ import java.util.Vector;
 public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
     private static final String TAG = FetchWeatherTask.class.getSimpleName();
 
-    private ArrayAdapter<String> weatherListAdapter;
     private final Context mContext;
 
     /* The date/time conversion code is going to be moved outside the asynctask later,
@@ -213,7 +212,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
             // http://openweathermap.org/API#forecast
             final String FORECAST_BASE_URL =
                     "http://api.openweathermap.org/data/2.5/forecast/daily?";
-            final String QUERY_PARAM = "q";
+            final String QUERY_PARAM = "zip";
             final String FORMAT_PARAM = "mode";
             final String UNITS_PARAM = "units";
             final String DAYS_PARAM = "cnt";
@@ -228,6 +227,8 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
                     .build();
 
             URL url = new URL(builtUri.toString());
+
+            Log.d(TAG, url.toString());
 
             // Create the request to OpenWeatherMap, and open the connection
             urlConnection = (HttpURLConnection) url.openConnection();
@@ -293,7 +294,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
      * @param lon the longitude of the city
      * @return the row ID of the added location.
      */
-    long addLocation(String locationSetting, String cityName, double lat, double lon) {
+    public long addLocation(String locationSetting, String cityName, double lat, double lon) {
         long locationId;
 
         // First, check if the location with this city name exists in the db

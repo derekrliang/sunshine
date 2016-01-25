@@ -5,6 +5,7 @@
 
     <string name="pref_title_location">Location</string>
     <string name="pref_key_location">location</string>
+    <string name="pref_default_location">92612</string>
 
     <string name="pref_title_temperature_units">Temperature Units</string>
     <string name="pref_key_temperature_units">temperature_units</string>
