@@ -2,6 +2,7 @@ package com.example.sunshine.app;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
@@ -20,6 +21,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import android.widget.Toast;
+import com.example.sunshine.app.data.WeatherContract;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,7 +44,7 @@ public class MainActivityFragment extends Fragment {
 
     private static final String TAG = MainActivityFragment.class.getSimpleName();
 
-    private ArrayAdapter<String> weatherListAdapter;
+    private ForecastAdapter mForecastAdapter;
 
     public MainActivityFragment() {
 
@@ -61,7 +63,7 @@ public class MainActivityFragment extends Fragment {
     }
 
     public void updateWeather() {
-        FetchWeatherTask weatherTask = new FetchWeatherTask(getContext(), weatherListAdapter);
+        FetchWeatherTask weatherTask = new FetchWeatherTask(getContext());
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String zipCode = sharedPref.getString(getString(R.string.pref_key_location), "92612");
         weatherTask.execute(zipCode);
@@ -116,31 +118,26 @@ public class MainActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        String locationSetting = Utility.getPreferredLocation(getActivity());
 
-        weatherListAdapter = new ArrayAdapter<String>(
-                getActivity(),
-                R.layout.list_item_forecast,
-                R.id.list_item_forcecast_textview,
-                new ArrayList<String>()
-        );
+        // Sort order:  Ascending, by date.
+        String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
+        Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(
+                locationSetting, System.currentTimeMillis());
+
+        Cursor cur = getActivity().getContentResolver().query(weatherForLocationUri,
+                null, null, null, sortOrder);
+
+        // The CursorAdapter will take data from our cursor and populate the ListView
+        // However, we cannot use FLAG_AUTO_REQUERY since it is deprecated, so we will end
+        // up with an empty list the first time we run.
+        mForecastAdapter = new ForecastAdapter(getActivity(), cur, 0);
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
+        // Get a reference to the ListView, and attach this adapter to it.
         ListView listView = (ListView) rootView.findViewById(R.id.list_view);
-        listView.setAdapter(weatherListAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String forecast = weatherListAdapter.getItem(i);
-                Toast.makeText(getActivity(), forecast, Toast.LENGTH_SHORT).show();
-
-                Intent detailIntent = new Intent(getActivity(), DetailActivity.class).putExtra(Intent.EXTRA_TEXT, forecast);
-
-                startActivity(detailIntent);
-            }
-        });
-
-
+        listView.setAdapter(mForecastAdapter);
 
         return rootView;
     }
