@@ -77,8 +77,10 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     static final int COL_COORD_LAT = 7;
     static final int COL_COORD_LONG = 8;
 
+    private static final String FORECASTFRAGMENT_TAG = "FORECASTFRAGMENT_TAG";
     private static final String TAG = MainActivityFragment.class.getSimpleName();
     private static final int FORECAST_LOADER = 0;
+    private String mLocation = "";
 
     private ForecastAdapter mForecastAdapter;
 
@@ -91,7 +93,18 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        getLoaderManager().initLoader(0, null, this);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String zipCode = sharedPref.getString(getString(R.string.pref_key_location), getString(R.string.pref_default_location));
+        mLocation = zipCode;
+
+        getLoaderManager().initLoader(FORECAST_LOADER, null, this);
+    }
+
+
+    public void onLocationChanged() {
+        Log.d(TAG, "onLocationChanged");
+        updateWeather();
+        getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
     }
 
     @Override
@@ -103,19 +116,38 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     public void updateWeather() {
         FetchWeatherTask weatherTask = new FetchWeatherTask(getContext());
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String zipCode = sharedPref.getString(getString(R.string.pref_key_location), "92612");
+        String zipCode = sharedPref.getString(getString(R.string.pref_key_location), getString(R.string.pref_default_location));
+
+        Log.d(TAG, "Fetching weather for [" + zipCode + "]");
         weatherTask.execute(zipCode);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        updateWeather();
+
+        // This fetches the Open Weather API every time we rotate/unpause the app.
+        // So, this take up quite the resources.
+        //updateWeather();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Check if location has changed
+
+        String storedLocation = Utility.getPreferredLocation(getContext());
+
+        if (!storedLocation.equals(mLocation)) {
+            Log.d(TAG, "Location changed, updating");
+            onLocationChanged();
+            mLocation = storedLocation;
+        }
     }
 
     private void openPreferredLocationInMap() {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String location = sharedPref.getString(getString(R.string.pref_key_location), "92612");
+        String location = sharedPref.getString(getString(R.string.pref_key_location), getString(R.string.pref_default_location));
 
         // Using the URI scheme for showing a location found on a map.  This super-handy
         // intent can is detailed in the "Common Intents" page of Android's developer site:
