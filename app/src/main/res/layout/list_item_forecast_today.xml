@@ -56,4 +56,5 @@
                 android:text="Clear"
                 />
     </LinearLayout>
+
 </LinearLayout>
