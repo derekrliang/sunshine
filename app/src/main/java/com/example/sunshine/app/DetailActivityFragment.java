@@ -95,7 +95,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
 
         // If onLoadFinished happens before this, we can go ahead and set the share intent now.
-        if (mForecast != null) {
+        if (mShareActionProvider != null && mForecast != null) {
             mShareActionProvider.setShareIntent(createShareForecastIntent());
         }
 
