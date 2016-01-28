@@ -81,6 +81,8 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     private static final int FORECAST_LOADER = 0;
     private String mLocation = "";
 
+    private boolean mUseTodayLayout = false;
+
     private ListView mListView;
     private int mPosition = ListView.INVALID_POSITION;
     private static final String SELECTED_KEY = "selected_position";
@@ -293,6 +295,13 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onLoaderReset(Loader loader) {
         mForecastAdapter.swapCursor(null);
+    }
+
+    public void setUseTodayLayout(boolean useTodayLayout) {
+        mUseTodayLayout = useTodayLayout;
+        if (mForecastAdapter != null) {
+            mForecastAdapter.setUseTodayLayout(mUseTodayLayout);
+        }
     }
 
     /**
