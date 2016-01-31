@@ -27,6 +27,7 @@ import android.support.v4.content.CursorLoader;
 
 import android.widget.Toast;
 import com.example.sunshine.app.data.WeatherContract;
+import com.example.sunshine.app.service.SunshineService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -130,12 +131,9 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     }
 
     public void updateWeather() {
-        FetchWeatherTask weatherTask = new FetchWeatherTask(getContext());
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String zipCode = sharedPref.getString(getString(R.string.pref_key_location), getString(R.string.pref_default_location));
-
-        Log.d(TAG, "Fetching weather for [" + zipCode + "]");
-        weatherTask.execute(zipCode);
+        Intent intent = new Intent(getActivity(), SunshineService.class);
+        intent.putExtra(SunshineService.LOCATION_QUERY_EXTRA, Utility.getPreferredLocation(getActivity()));
+        getActivity().startService(intent);
     }
 
     @Override

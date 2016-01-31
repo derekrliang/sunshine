@@ -1,21 +1,14 @@
-package com.example.sunshine.app;
+package com.example.sunshine.app.service;
 
-
+import android.app.IntentService;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 import android.text.format.Time;
 import android.util.Log;
-import android.widget.ArrayAdapter;
-import com.example.sunshine.app.R;
 import com.example.sunshine.app.data.WeatherContract;
-import com.example.sunshine.app.data.WeatherProvider;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,19 +19,20 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.Vector;
 
-public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
-    private static final String TAG = FetchWeatherTask.class.getSimpleName();
+public class SunshineService extends IntentService {
 
-    private final Context mContext;
+    private static final String TAG = SunshineService.class.getSimpleName();
+    public static final String LOCATION_QUERY_EXTRA = "lqe";
 
-    /* The date/time conversion code is going to be moved outside the asynctask later,
-* so for convenience we're breaking it out into its own method now.
-*/
-    public FetchWeatherTask(Context context) {
-        mContext = context;
+
+    public SunshineService() {
+        super("SunshineService");
+    }
+
+    public SunshineService(String name) {
+        super(name);
     }
 
     /**
@@ -49,7 +43,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
      * into an Object hierarchy for us.
      */
     private void getWeatherDataFromJson(String forecastJsonStr,
-                                            String locationSetting)
+                                        String locationSetting)
             throws JSONException {
 
         // Now we have a String representing the complete forecast in JSON Format.
@@ -176,7 +170,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
             if ( cVVector.size() > 0 ) {
                 ContentValues[] cvArray = new ContentValues[cVVector.size()];
                 cVVector.toArray(cvArray);
-                inserted = mContext.getContentResolver().bulkInsert(WeatherContract.WeatherEntry.CONTENT_URI, cvArray);
+                inserted = this.getContentResolver().bulkInsert(WeatherContract.WeatherEntry.CONTENT_URI, cvArray);
             }
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage(), e);
@@ -184,15 +178,9 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
         }
     }
 
-
     @Override
-    protected Void doInBackground(String... params) {
-
-        // If there's no zip code, there's nothing to look up.  Verify size of params.
-        if (params.length == 0) {
-            return null;
-        }
-        String locationQuery = params[0];
+    protected void onHandleIntent(Intent intent) {
+        String locationQuery = intent.getStringExtra(LOCATION_QUERY_EXTRA);
 
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
@@ -219,7 +207,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
             final String APPID_PARAM = "APPID";
 
             Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
-                    .appendQueryParameter(QUERY_PARAM, params[0])
+                    .appendQueryParameter(QUERY_PARAM, locationQuery)
                     .appendQueryParameter(FORMAT_PARAM, format)
                     .appendQueryParameter(UNITS_PARAM, units)
                     .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
@@ -240,7 +228,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
             StringBuffer buffer = new StringBuffer();
             if (inputStream == null) {
                 // Nothing to do.
-                return null;
+                return;
             }
             reader = new BufferedReader(new InputStreamReader(inputStream));
 
@@ -254,14 +242,14 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
 
             if (buffer.length() == 0) {
                 // Stream was empty.  No point in parsing.
-                return null;
+                return;
             }
             forecastJsonStr = buffer.toString();
         } catch (IOException e) {
             Log.e(TAG, "Error ", e);
             // If the code didn't successfully get the weather data, there's no point in attemping
             // to parse it.
-            return null;
+            return;
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -282,7 +270,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
             e.printStackTrace();
         }
         // This will only happen if there was an error getting or parsing the forecast.
-        return null;
+        return;
     }
 
     /**
@@ -298,7 +286,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
         long locationId;
 
         // First, check if the location with this city name exists in the db
-        Cursor locationCursor = mContext.getContentResolver().query(
+        Cursor locationCursor = this.getContentResolver().query(
                 WeatherContract.LocationEntry.CONTENT_URI,
                 new String[]{WeatherContract.LocationEntry._ID},
                 WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " = ?",
@@ -321,7 +309,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
             locationValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LONG, lon);
 
             // Finally, insert location data into the database.
-            Uri insertedUri = mContext.getContentResolver().insert(
+            Uri insertedUri = this.getContentResolver().insert(
                     WeatherContract.LocationEntry.CONTENT_URI,
                     locationValues
             );
@@ -334,5 +322,4 @@ public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
         // Wait, that worked?  Yes!
         return locationId;
     }
-
 }
