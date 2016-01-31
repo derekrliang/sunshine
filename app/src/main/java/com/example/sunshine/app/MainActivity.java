@@ -29,6 +29,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             // in two-pane mode.
             mTwoPane = true;
 
+            getSupportActionBar().setElevation(0f);
+
             Log.d(TAG, "in two pane");
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
