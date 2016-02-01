@@ -181,7 +181,7 @@ public class SettingsActivity extends PreferenceActivity {
 
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_location)));
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_temperature_units)));
-            bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_enable_notifications_key)));
+
         }
     }
 }
