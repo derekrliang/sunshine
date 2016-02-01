@@ -149,6 +149,8 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onResume() {
         super.onResume();
+
+        Log.d(TAG, "onResume");
         // Check if location has changed
 
         String storedLocation = Utility.getPreferredLocation(getContext());
@@ -195,6 +197,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_refresh) {
+            Log.d(TAG, "onOptionsItemSelected");
             updateWeather();
             return true;
         } else if (id == R.id.action_location) {
@@ -284,6 +287,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.d(TAG, "onLoadFinished");
         mForecastAdapter.swapCursor(data);
         if (mPosition != ListView.INVALID_POSITION) {
             // If we don't need to restart the loader, and there's a desired position to restore

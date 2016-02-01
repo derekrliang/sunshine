@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import com.example.sunshine.app.sync.SunshineSyncAdapter;
 
 public class MainActivity extends AppCompatActivity implements MainActivityFragment.Callback {
 
@@ -47,6 +48,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
                 .findFragmentById(R.id.fragment_forecast);
 
         forecastFragment.setUseTodayLayout(!mTwoPane);
+
+        SunshineSyncAdapter.initializeSyncAdapter(this);
     }
 
 
@@ -55,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         super.onResume();
         String location = Utility.getPreferredLocation( this );
         // update the location in our second pane using the fragment manager
-        if (location != null && !location.equals(mLocation)) {
+        if (mTwoPane && location != null && !location.equals(mLocation)) {
             MainActivityFragment ff = (MainActivityFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_forecast);
             if ( null != ff ) {
                 ff.onLocationChanged();
