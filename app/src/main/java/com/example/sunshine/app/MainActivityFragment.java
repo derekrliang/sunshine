@@ -168,23 +168,26 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     }
 
     private void openPreferredLocationInMap() {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String location = sharedPref.getString(getString(R.string.pref_key_location), getString(R.string.pref_default_location));
-
         // Using the URI scheme for showing a location found on a map.  This super-handy
         // intent can is detailed in the "Common Intents" page of Android's developer site:
         // http://developer.android.com/guide/components/intents-common.html#Maps
-        Uri geoLocation = Uri.parse("geo:0,0?").buildUpon()
-                .appendQueryParameter("q", location)
-                .build();
+        if ( null != mForecastAdapter ) {
+            Cursor c = mForecastAdapter.getCursor();
+            if (null != c) {
+                c.moveToPosition(0);
+                String posLat = c.getString(COL_COORD_LAT);
+                String posLong = c.getString(COL_COORD_LONG);
+                Uri geoLocation = Uri.parse("geo:" + posLat + "," + posLong);
 
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(geoLocation);
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(geoLocation);
 
-        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
-            startActivity(intent);
-        } else {
-            Log.d(TAG, "Couldn't call " + location + ", no receiving apps installed!");
+                if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    startActivity(intent);
+                } else {
+                    Log.d(TAG, "Couldn't call " + geoLocation.toString() + ", no receiving apps installed!");
+                }
+            }
         }
     }
 
