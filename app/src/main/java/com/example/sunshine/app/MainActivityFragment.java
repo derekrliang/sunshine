@@ -5,10 +5,13 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.text.format.Time;
@@ -18,17 +21,15 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.Manifest;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.*;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.content.CursorLoader;
 
-import android.widget.Toast;
 import com.example.sunshine.app.data.WeatherContract;
 import com.example.sunshine.app.sync.SunshineSyncAdapter;
 import org.json.JSONArray;
@@ -50,6 +51,22 @@ import java.util.List;
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    /**
+     * Id to identify a syncs permission request.
+     */
+    private static final int REQUEST_SYNC = 0;
+    private static final int REQUEST_INTERNET = 0;
+
+
+    /**
+     * Permissions required to read and write syncs.
+     */
+    private static String[] PERMISSIONS_SYNC = {Manifest.permission.READ_SYNC_SETTINGS,
+            Manifest.permission.WRITE_SYNC_SETTINGS};
+
+    private static String[] PERMISSIONS_INTERNET = {Manifest.permission.INTERNET};
+
 
     private static final String[] FORECAST_COLUMNS = {
             // In this case the id needs to be fully qualified with a table name, since
@@ -107,6 +124,8 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         mLocation = zipCode;
 
         getLoaderManager().initLoader(FORECAST_LOADER, null, this);
+
+        checkPermissions();
     }
 
 
@@ -295,13 +314,31 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         Log.d(TAG, "onLoadFinished");
+
         mForecastAdapter.swapCursor(data);
         if (mPosition != ListView.INVALID_POSITION) {
             // If we don't need to restart the loader, and there's a desired position to restore
             // to, do so now.
             mListView.smoothScrollToPosition(mPosition);
         }
+
+        updateEmptyView();
     }
+
+    private void updateEmptyView() {
+        if ( mForecastAdapter.getCount() == 0 ) {
+            TextView tv = (TextView) getView().findViewById(R.id.listview_forecast_empty);
+            if ( null != tv ) {
+                // if cursor is empty, why? do we have an invalid location
+                int message = R.string.empty_forecast_list;
+                if (!Utility.isNetworkAvailable(getActivity()) ) {
+                    message = R.string.empty_forecast_list_no_network;
+                }
+                tv.setText(message);
+            }
+        }
+    }
+
     @Override
     public void onLoaderReset(Loader loader) {
         mForecastAdapter.swapCursor(null);
@@ -325,4 +362,75 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
          */
         public void onItemSelected(Uri dateUri);
     }
+
+    public void checkPermissions() {
+        Log.i(TAG, "Checking permissions.");
+
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.INTERNET)
+                != PackageManager.PERMISSION_GRANTED) {
+            Log.i(TAG, "Internet permissions has NOT been granted. Requesting permissions.");
+            requestInternetPermissions();
+
+        } else {
+            // Internet permissions have been granted.
+            Log.i(TAG,
+                    "Internet permissions have already been granted.");
+        }
+
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_SYNC_SETTINGS)
+                != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_SYNC_SETTINGS)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Sync permissions have not been granted.
+            Log.i(TAG, "Sync permissions has NOT been granted. Requesting permissions.");
+            requestSyncPermissions();
+
+        } else {
+            // Sync permissions have been granted.
+            Log.i(TAG,
+                    "Sync permissions have already been granted.");
+        }
+    }
+
+    /**
+     * Requests the Sync permissions.
+     * If the permission has been denied previously, a SnackBar will prompt the user to grant the
+     * permission, otherwise it is requested directly.
+     */
+    private void requestSyncPermissions() {
+        /*
+        if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                Manifest.permission.READ_SYNC_SETTINGS)
+                || ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                Manifest.permission.WRITE_SYNC_SETTINGS)) {
+
+            // Provide an additional rationale to the user if the permission was not granted
+            // and the user would benefit from additional context for the use of the permission.
+            // For example, if the request has been denied previously.
+            Log.i(TAG,
+                    "Displaying contacts permission rationale to provide additional context.");
+
+            // Display a SnackBar with an explanation and a button to trigger the request.
+            Snackbar.make(mLayout, R.string.permission_contacts_rationale,
+                    Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.ok, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            ActivityCompat
+                                    .requestPermissions(MainActivity.this, PERMISSIONS_SYNC,
+                                            REQUEST_SYNC);
+                        }
+                    })
+                    .show();
+        } else {
+        */
+        // Sync permissions have not been granted yet. Request them directly.
+        ActivityCompat.requestPermissions(getActivity(), PERMISSIONS_SYNC, REQUEST_SYNC);
+        //}
+    }
+
+    private void requestInternetPermissions() {
+        ActivityCompat.requestPermissions(getActivity(), PERMISSIONS_INTERNET, REQUEST_INTERNET);
+    }
+
 }
