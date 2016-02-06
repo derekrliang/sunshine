@@ -9,7 +9,6 @@
             android:maxLines="1"
     />
 
-
     <ListPreference
             android:key="@string/pref_key_temperature_units"
             android:title="@string/pref_title_temperature_units"

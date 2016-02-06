@@ -17,6 +17,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
 import com.example.sunshine.app.data.WeatherContract;
@@ -37,19 +38,17 @@ import java.util.List;
  * API Guide</a> for more information on developing a Settings UI.
  */
 public class SettingsActivity extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+    public final static String TAG = SettingsActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupActionBar();
-
-        //bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_location)));
     }
 
     @Override
     protected boolean isValidFragment(String fragmentName) {
         return GeneralPreferenceFragment.class.getName().equals(fragmentName);
-
     }
 
     /**
@@ -117,26 +116,41 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
     private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
-            String key = value.toString();
+            Context context = preference.getContext();
+            String stringValue = value.toString();
+            String key = preference.getKey();
+
+            Log.d(TAG, "onPreferenceChange stringValue=" + stringValue + " key=" + key);
 
             if (preference instanceof ListPreference) {
                 // For list preferences, look up the correct display value in
-                // the preference's 'entries' list.
+                // the preference's 'entries' list (since they have separate labels/values).
                 ListPreference listPreference = (ListPreference) preference;
-                int index = listPreference.findIndexOfValue(key);
-
-                // Set the summary to reflect the new value.
-                preference.setSummary(
-                        index >= 0
-                                ? listPreference.getEntries()[index]
-                                : null);
-
+                int prefIndex = listPreference.findIndexOfValue(stringValue);
+                if (prefIndex >= 0) {
+                    preference.setSummary(listPreference.getEntries()[prefIndex]);
+                }
+            } else if (key.equals(context.getString(R.string.pref_key_location))) {
+                @SunshineSyncAdapter.LocationStatus int status = Utility.getLocationStatus(preference.getContext());
+                switch (status) {
+                    case SunshineSyncAdapter.LOCATION_STATUS_OK:
+                        preference.setSummary(stringValue);
+                        break;
+                    case SunshineSyncAdapter.LOCATION_STATUS_UNKNOWN:
+                        preference.setSummary(context.getString(R.string.pref_location_unknown_description, value.toString()));
+                        break;
+                    case SunshineSyncAdapter.LOCATION_STATUS_INVALID:
+                        preference.setSummary(context.getString(R.string.pref_location_error_description, value.toString()));
+                        break;
+                    default:
+                        // Note --- if the server is down we still assume the value
+                        // is valid
+                        preference.setSummary(stringValue);
+                }
             } else {
-                // For all other preferences, set the summary to the value's
-                // simple string representation.
-                preference.setSummary(key);
+                // For other preferences, set the summary to the value's simple string representation.
+                preference.setSummary(stringValue);
             }
-
             return true;
         }
     };
@@ -186,17 +200,8 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
 
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-
-            //bindPreferenceSummaryToValue(findPreference("example_text"));
-            //bindPreferenceSummaryToValue(findPreference("example_list"));
-
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_location)));
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_temperature_units)));
-
         }
     }
 }
