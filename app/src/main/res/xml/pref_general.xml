@@ -1,12 +1,15 @@
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:custom="http://schemas.android.com/apk/res/com.example.sunshine.app"
+        >
 
-    <EditTextPreference
+    <com.example.sunshine.app.LocationEditTextPreference
             android:key="@string/pref_key_location"
             android:title="@string/pref_title_location"
             android:defaultValue="92612"
             android:inputType="text"
             android:singleLine="true"
-            android:maxLines="1"
+            custom:minLength="3"
     />
 
     <ListPreference
