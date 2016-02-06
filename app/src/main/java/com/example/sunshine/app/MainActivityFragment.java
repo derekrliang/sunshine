@@ -169,19 +169,8 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     public void onResume() {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
         sp.registerOnSharedPreferenceChangeListener(this);
-
         super.onResume();
-
         Log.d(TAG, "onResume");
-        // Check if location has changed
-
-        String storedLocation = Utility.getPreferredLocation(getContext());
-
-        if (!storedLocation.equals(mLocation)) {
-            Log.d(TAG, "Location changed, updating");
-            onLocationChanged();
-            mLocation = storedLocation;
-        }
     }
 
     @Override
@@ -343,6 +332,9 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                         break;
                     case SunshineSyncAdapter.LOCATION_STATUS_SERVER_INVALID:
                         message = R.string.empty_forecast_list_server_error;
+                        break;
+                    case SunshineSyncAdapter.LOCATION_STATUS_INVALID:
+                        message = R.string.empty_forecast_list_invalid_location;
                         break;
                     default:
                         if (!Utility.isNetworkAvailable(getActivity()) ) {

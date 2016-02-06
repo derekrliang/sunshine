@@ -2,6 +2,7 @@ package com.example.sunshine.app;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -18,6 +19,7 @@ import android.preference.RingtonePreference;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
+import com.example.sunshine.app.data.WeatherContract;
 import com.example.sunshine.app.sync.SunshineSyncAdapter;
 
 import java.util.List;
@@ -34,7 +36,7 @@ import java.util.List;
  * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
  * API Guide</a> for more information on developing a Settings UI.
  */
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,13 +117,13 @@ public class SettingsActivity extends PreferenceActivity {
     private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
-            String stringValue = value.toString();
+            String key = value.toString();
 
             if (preference instanceof ListPreference) {
                 // For list preferences, look up the correct display value in
                 // the preference's 'entries' list.
                 ListPreference listPreference = (ListPreference) preference;
-                int index = listPreference.findIndexOfValue(stringValue);
+                int index = listPreference.findIndexOfValue(key);
 
                 // Set the summary to reflect the new value.
                 preference.setSummary(
@@ -132,7 +134,7 @@ public class SettingsActivity extends PreferenceActivity {
             } else {
                 // For all other preferences, set the summary to the value's
                 // simple string representation.
-                preference.setSummary(stringValue);
+                preference.setSummary(key);
             }
 
             return true;
@@ -158,6 +160,19 @@ public class SettingsActivity extends PreferenceActivity {
                 PreferenceManager
                         .getDefaultSharedPreferences(preference.getContext())
                         .getString(preference.getKey(), ""));
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(getString(R.string.pref_key_location))) {
+            // we've changed the location
+            // first clear locationStatus
+            Utility.resetLocationStatus(this);
+            SunshineSyncAdapter.syncImmediately(this);
+        } else if (key.equals(getString(R.string.pref_key_temperature_units))) {
+            // units have changed. update lists of weather entries accordingly
+            getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);
+        }
     }
 
     /**
