@@ -1,12 +1,15 @@
 package com.example.sunshine.app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import com.example.sunshine.app.gcm.RegistrationIntentService;
 import com.example.sunshine.app.sync.SunshineSyncAdapter;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -56,8 +59,17 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
         SunshineSyncAdapter.initializeSyncAdapter(this);
 
-        if (!checkPlayServices()) {
-
+        if (checkPlayServices()) {
+            // Because this is the initial creation of the app, we'll want to be certain we have
+            // a token. If we do not, then we will start the IntentService that will register this
+            // application with GCM.
+            SharedPreferences sharedPreferences =
+                    PreferenceManager.getDefaultSharedPreferences(this);
+            boolean sentToken = sharedPreferences.getBoolean(SENT_TOKEN_TO_SERVER, false);
+            if (!sentToken) {
+                Intent intent = new Intent(this, RegistrationIntentService.class);
+                startService(intent);
+            }
         }
     }
 
