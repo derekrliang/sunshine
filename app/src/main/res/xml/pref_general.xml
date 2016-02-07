@@ -1,24 +1,23 @@
 <PreferenceScreen
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:custom="http://schemas.android.com/apk/res/com.example.sunshine.app"
-        >
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <com.example.sunshine.app.LocationEditTextPreference
-            android:key="@string/pref_key_location"
-            android:title="@string/pref_title_location"
-            android:defaultValue="92612"
+            android:title="@string/pref_location_label"
+            android:key="@string/pref_location_key"
+            android:defaultValue="@string/pref_location_default"
             android:inputType="text"
             android:singleLine="true"
-            custom:minLength="3"
-    />
+            custom:minLength="3"/>
 
     <ListPreference
-            android:key="@string/pref_key_temperature_units"
-            android:title="@string/pref_title_temperature_units"
-            android:defaultValue="@string/pref_units_values_metric"
-            android:entries="@array/pref_list_temperature_units_titles"
-            android:entryValues="@array/pref_list_temperature_units_values"
-    />
+            android:title="@string/pref_units_label"
+            android:key="@string/pref_units_key"
+            android:defaultValue="@string/pref_units_metric"
+            android:entryValues="@array/pref_units_values"
+            android:entries="@array/pref_units_options" />
 
     <ListPreference
             android:title="@string/pref_art_pack_label"
@@ -26,7 +25,6 @@
             android:defaultValue="@string/pref_art_pack_sunshine"
             android:entryValues="@array/pref_art_pack_values"
             android:entries="@array/pref_art_pack_options" />
-
 
     <CheckBoxPreference
             android:title="@string/pref_enable_notifications_label"

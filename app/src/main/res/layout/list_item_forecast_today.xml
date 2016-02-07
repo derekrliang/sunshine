@@ -1,4 +1,3 @@
-<!-- Layout for weather forecast list item for today -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
@@ -14,6 +13,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
             android:layout_marginLeft="60dp"
+            android:layout_marginStart="60dp"
             android:orientation="vertical">
 
         <TextView
@@ -38,7 +38,8 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:textSize="36sp"
-                android:layout_marginLeft="8dp"/>
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"/>
     </LinearLayout>
 
     <LinearLayout
@@ -46,6 +47,7 @@
             android:layout_width="0dp"
             android:layout_weight="5"
             android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp"
             android:orientation="vertical"
             android:gravity="center_horizontal|bottom">
 

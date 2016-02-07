@@ -99,7 +99,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         setHasOptionsMenu(true);
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String zipCode = sharedPref.getString(getString(R.string.pref_key_location), getString(R.string.pref_default_location));
+        String zipCode = sharedPref.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
         mLocation = zipCode;
 
         getLoaderManager().initLoader(FORECAST_LOADER, null, this);
@@ -190,12 +190,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_refresh) {
-            Log.d(TAG, "onOptionsItemSelected");
-            updateWeather();
-            return true;
-        } else if (id == R.id.action_location) {
+        if (id == R.id.action_map) {
             openPreferredLocationInMap();
             return true;
         }

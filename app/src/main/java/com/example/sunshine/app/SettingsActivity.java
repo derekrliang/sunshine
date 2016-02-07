@@ -130,7 +130,7 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
                 if (prefIndex >= 0) {
                     preference.setSummary(listPreference.getEntries()[prefIndex]);
                 }
-            } else if (key.equals(context.getString(R.string.pref_key_location))) {
+            } else if (key.equals(context.getString(R.string.pref_location_key))) {
                 @SunshineSyncAdapter.LocationStatus int status = Utility.getLocationStatus(preference.getContext());
                 switch (status) {
                     case SunshineSyncAdapter.LOCATION_STATUS_OK:
@@ -181,12 +181,12 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(getString(R.string.pref_key_location))) {
+        if (key.equals(getString(R.string.pref_location_key))) {
             // we've changed the location
             // first clear locationStatus
             Utility.resetLocationStatus(this);
             SunshineSyncAdapter.syncImmediately(this);
-        } else if (key.equals(getString(R.string.pref_key_temperature_units))) {
+        } else if (key.equals(getString(R.string.pref_units_key))) {
             // units have changed. update lists of weather entries accordingly
             getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);
         }
@@ -203,8 +203,8 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
 
-            bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_location)));
-            bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_temperature_units)));
+            bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_location_key)));
+            bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_units_key)));
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_art_pack_key)));
         }
     }
