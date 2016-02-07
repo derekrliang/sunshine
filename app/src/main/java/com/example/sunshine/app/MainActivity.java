@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,11 +15,11 @@ import com.example.sunshine.app.sync.SunshineSyncAdapter;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
-public class MainActivity extends AppCompatActivity implements MainActivityFragment.Callback {
+public class MainActivity extends AppCompatActivity implements ForecastFragment.Callback {
 
 
     private static final String DETAILFRAGMENT_TAG = "DFTAG";
-    private static final String TAG = MainActivityFragment.class.getSimpleName();
+    private static final String TAG = ForecastFragment.class.getSimpleName();
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     public static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
@@ -30,6 +31,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         //if (findViewById(R.id.weather_detail_container) != null) {
         if (findViewById(R.id.weather_detail_container) != null) {
@@ -52,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             getSupportActionBar().setElevation(0f);
         }
 
-        MainActivityFragment forecastFragment = (MainActivityFragment) getSupportFragmentManager()
+        ForecastFragment forecastFragment = (ForecastFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.fragment_forecast);
 
         forecastFragment.setUseTodayLayout(!mTwoPane);
@@ -80,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         String location = Utility.getPreferredLocation( this );
         // update the location in our second pane using the fragment manager
         if (mTwoPane && location != null && !location.equals(mLocation)) {
-            MainActivityFragment ff = (MainActivityFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_forecast);
+            ForecastFragment ff = (ForecastFragment)getSupportFragmentManager().findFragmentById(R.id.fragment_forecast);
             if ( null != ff ) {
                 ff.onLocationChanged();
             }

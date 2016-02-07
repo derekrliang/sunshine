@@ -1,20 +1,14 @@
 package com.example.sunshine.app;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,32 +19,17 @@ import android.Manifest;
 import android.view.ViewGroup;
 import android.widget.*;
 
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.content.CursorLoader;
 
 import com.example.sunshine.app.data.WeatherContract;
 import com.example.sunshine.app.sync.SunshineSyncAdapter;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, SharedPreferences.OnSharedPreferenceChangeListener {
+public class ForecastFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, SharedPreferences.OnSharedPreferenceChangeListener {
 
     /**
      * Id to identify a syncs permission request.
@@ -98,7 +77,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     static final int COL_COORD_LAT = 7;
     static final int COL_COORD_LONG = 8;
 
-    private static final String TAG = MainActivityFragment.class.getSimpleName();
+    private static final String TAG = ForecastFragment.class.getSimpleName();
     private static final int FORECAST_LOADER = 0;
     private String mLocation = "";
 
@@ -110,7 +89,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     private ForecastAdapter mForecastAdapter;
 
-    public MainActivityFragment() {
+    public ForecastFragment() {
 
     }
 

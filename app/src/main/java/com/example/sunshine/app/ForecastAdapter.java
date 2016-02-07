@@ -3,7 +3,6 @@ package com.example.sunshine.app;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;
-import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.example.sunshine.app.data.WeatherContract;
 
 /**
  * {@link ForecastAdapter} exposes a list of weather forecasts
@@ -82,7 +80,7 @@ public class ForecastAdapter extends CursorAdapter {
         ViewHolder viewHolder = (ViewHolder) view.getTag();
 
         int viewType = getItemViewType(cursor.getPosition());
-        int weatherId = cursor.getInt(MainActivityFragment.COL_WEATHER_CONDITION_ID);
+        int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID);
         int fallbackIconId = 0;
 
         switch (viewType) {
@@ -106,7 +104,7 @@ public class ForecastAdapter extends CursorAdapter {
                 .into(viewHolder.iconView);
 
         // Read date from cursor
-        long dateInMillis = cursor.getLong(MainActivityFragment.COL_WEATHER_DATE);
+        long dateInMillis = cursor.getLong(ForecastFragment.COL_WEATHER_DATE);
         // Find TextView and set formatted date on it
         viewHolder.dateView.setText(Utility.getFriendlyDayString(context, dateInMillis));
 
@@ -123,13 +121,13 @@ public class ForecastAdapter extends CursorAdapter {
 
         // Read high temperature from cursor
         String high = Utility.formatTemperature(
-                context, cursor.getDouble(MainActivityFragment.COL_WEATHER_MAX_TEMP));
+                context, cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP));
         viewHolder.highTempView.setText(high);
         viewHolder.highTempView.setContentDescription(context.getString(R.string.a11y_high_temp, high));
 
         // Read low temperature from cursor
         String low = Utility.formatTemperature(
-                context, cursor.getDouble(MainActivityFragment.COL_WEATHER_MIN_TEMP));
+                context, cursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP));
         viewHolder.lowTempView.setText(low);
         viewHolder.lowTempView.setContentDescription(context.getString(R.string.a11y_low_temp, low));
     }
