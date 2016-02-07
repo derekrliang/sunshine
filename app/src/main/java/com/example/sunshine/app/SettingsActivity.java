@@ -147,6 +147,9 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
                         // is valid
                         preference.setSummary(stringValue);
                 }
+            } else if (key.equals(context.getString(R.string.pref_art_pack_key)) ) {
+                // art pack have changed. update lists of weather entries accordingly
+                context.getContentResolver().notifyChange(WeatherContract.WeatherEntry.CONTENT_URI, null);
             } else {
                 // For other preferences, set the summary to the value's simple string representation.
                 preference.setSummary(stringValue);
@@ -202,6 +205,7 @@ public class SettingsActivity extends PreferenceActivity implements SharedPrefer
 
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_location)));
             bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_key_temperature_units)));
+            bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_art_pack_key)));
         }
     }
 }
