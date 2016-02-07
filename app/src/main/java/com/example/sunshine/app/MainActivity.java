@@ -18,6 +18,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     private static final String TAG = MainActivityFragment.class.getSimpleName();
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
+    public static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
+
     private boolean mTwoPane = false;
     private String mLocation;
 
