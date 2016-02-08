@@ -178,15 +178,20 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                     null
             );
         }
+<<<<<<< HEAD
         ViewParent vp = getView().getParent();
         if (vp instanceof CardView) {
             ((View)vp).setVisibility(View.INVISIBLE);
         }
+=======
+        getView().setVisibility(View.INVISIBLE);
+>>>>>>> 44adc5fa1ab8bb2e7f72a4c6898f93c33babaee3
         return null;
     }
 
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data != null && data.moveToFirst()) {
+<<<<<<< HEAD
 
             // Display only if we have content to display
             getView().setVisibility(View.VISIBLE);
@@ -194,6 +199,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
             if (vp instanceof CardView) {
                 ((View)vp).setVisibility(View.VISIBLE);
             }
+=======
+            getView().setVisibility(View.VISIBLE);
+>>>>>>> 44adc5fa1ab8bb2e7f72a4c6898f93c33babaee3
 
             // Read weather condition ID from cursor
             int weatherId = data.getInt(COL_WEATHER_CONDITION_ID);

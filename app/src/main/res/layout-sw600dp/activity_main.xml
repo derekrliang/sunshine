@@ -94,7 +94,6 @@
             android:layout_marginEnd="@dimen/abc_list_item_padding_horizontal_material"
             android:layout_marginBottom="@dimen/detail_container_bottom_margin"
             app:cardElevation="@dimen/detail_card_elevation"
-            app:cardPreventCornerOverlap="false"
-            />
+            app:cardPreventCornerOverlap="false"/>
 
 </RelativeLayout>
