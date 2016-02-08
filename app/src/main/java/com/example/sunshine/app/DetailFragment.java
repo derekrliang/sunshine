@@ -187,7 +187,6 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data != null && data.moveToFirst()) {
-
             // Display only if we have content to display
             getView().setVisibility(View.VISIBLE);
             ViewParent vp = getView().getParent();
